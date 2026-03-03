@@ -25,9 +25,18 @@ module vga_out(
     reg [10:0] H_idx; 
     reg [9:0] V_idx; 
     
+    
+    reg [10:0] tlx, tly, brx, bry;
+    
     initial begin
         H_idx = 0; 
         V_idx = 0; 
+        
+        //Assuming 128x128 sprite
+        tlx = 60; 
+        tly = 60; 
+        brx = 188; 
+        bry = 188; 
     end
 
     always @(posedge vga_clk) begin
@@ -60,6 +69,13 @@ module vga_out(
                 vgaRed   <= 4'b0000;
                 vgaGreen <= 4'b0000;
                 vgaBlue  <= 4'b1111;  // BLUE
+                
+                if(H_idx >= tlx && V_idx >= tly && H_idx < brx && V_idx < bry) begin
+                    vgaRed <= 4'b1111; 
+                    vgaGreen <= 4'b0000; 
+                    vgaBlue <= 4'b1111;
+                end
+                
             end else begin
                 vgaRed   <= 4'b0000;
                 vgaGreen <= 4'b0000;
