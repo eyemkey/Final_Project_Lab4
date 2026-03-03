@@ -18,7 +18,7 @@ module pmod_jstk_driver #(
     //Parsed outputs
     output reg [9:0] joy_x, 
     output reg [9:0] joy_y, 
-    output reg [9:0] joy_btn, 
+    output reg [2:0] joy_btn, 
     output reg data_valid
 );
 
@@ -92,79 +92,71 @@ module pmod_jstk_driver #(
     wire [7:0] rx_b3 = rx_shift[15:8]; 
     wire [7:0] rx_b4 = rx_shift[7:0]; 
     
+    reg last_bit;
+
     always @(posedge clk) begin
-        data_valid <= 1'b0; 
-        
-        case(state) 
-            ST_IDLE: begin
-                spi_active <= 1'b0; 
-                ss_n_reg <= 1'b1; 
-                sck_reg <= 1'b0; 
-                
-                if(poll_tick) begin
-                    tx_shift <= {8'h00, 8'h00, 8'h00, 8'h00, 8'h00}; 
-                    rx_shift <= 40'd0; 
-                    bit_count <= 6'd0; 
-                    
-                    //Set init MOSI
-                    mosi_reg <= 1'b0; 
-                    ss_n_reg <= 1'b0; 
-                    spi_active <= 1'b1; 
-                    
-                    //Load mosi with MSB before first rising edge
-                    mosi_reg <= tx_shift[39];
-                     
-                    state <= ST_SHIFT;
-                end
-                
-            end //ST_IDLE
-            
-            ST_SHIFT: begin
-            
-                if(sck_tick) begin
-                
-                    if(sck_reg == 1'b0) begin
-                        sck_reg <= 1'b1; 
-                        
-                        rx_shift <= {rx_shift[38:0], miso}; 
-                        bit_count <= bit_count + 1; 
-                        
-                        if(bit_count == 6'd39) begin
-                            state <= ST_DONE; 
-                        end //if(bit_count...
-                        
-                    end //if(sck_reg...      
-                    else begin
-                        sck_reg <= 1'b0; 
-                        
-                        tx_shift <= {rx_shift[38:0], 1'b0}; 
-                        mosi_reg <= tx_shift[38];
-                    
-                    end
-                    
-                end //if(scK_tick)
-                
-            end // ST_SHIFT
-            
-            ST_DONE: begin
-            
-                spi_active <= 1'b0; 
-                ss_n_reg <= 1'b1; 
-                sck_reg <= 1'b0; 
-                
-                joy_x <= {rx_b1[1:0], rx_b0}; 
-                joy_y <= {rx_b3[1:0], rx_b2}; 
-                joy_btn <= rx_b4[2:0]; 
-            
-                data_valid <= 1'b1; 
-                
-                state <= ST_IDLE; 
-                
-            end //ST_DONE
-        
-        endcase 
+      data_valid <= 1'b0;
     
-    end //always
+      case(state)
+        ST_IDLE: begin
+          spi_active <= 1'b0;
+          ss_n_reg   <= 1'b1;
+          sck_reg    <= 1'b0;
+          last_bit   <= 1'b0;
+    
+          if(poll_tick) begin
+            tx_shift   <= {8'h80, 8'h00, 8'h00, 8'h00, 8'h00}; // see note below
+            rx_shift   <= 40'd0;
+            bit_count  <= 6'd0;
+    
+            ss_n_reg   <= 1'b0;
+            spi_active <= 1'b1;
+    
+            // NOTE: mosi_reg uses old tx_shift here; set it explicitly:
+            mosi_reg   <= 1'b1; // MSB of 8'h80 is 1
+            state      <= ST_SHIFT;
+          end
+        end
+    
+        ST_SHIFT: begin
+          if(sck_tick) begin
+            if(sck_reg == 1'b0) begin
+              // rising edge: sample
+              sck_reg   <= 1'b1;
+              rx_shift  <= {rx_shift[38:0], miso};
+              bit_count <= bit_count + 1;
+    
+              if(bit_count == 6'd39)
+                last_bit <= 1'b1;  // mark that we just sampled final bit
+            end else begin
+              // falling edge: shift out next MOSI bit
+              sck_reg  <= 1'b0;
+              tx_shift <= {tx_shift[38:0], 1'b0};
+              mosi_reg <= tx_shift[38];
+    
+              // only finish once SCK has returned low after last sample
+              if(last_bit) begin
+                last_bit <= 1'b0;
+                state    <= ST_DONE;
+              end
+            end
+          end
+        end
+    
+        ST_DONE: begin
+          spi_active <= 1'b0;
+          ss_n_reg   <= 1'b1;
+          sck_reg    <= 1'b0;
+    
+          joy_x      <= {rx_b1[1:0], rx_b0};
+          joy_y      <= {rx_b3[1:0], rx_b2};
+          joy_btn    <= rx_b4[2:0];
+          data_valid <= 1'b1;
+    
+          state      <= ST_IDLE;
+        end
+      endcase
+    end
     
     
 endmodule

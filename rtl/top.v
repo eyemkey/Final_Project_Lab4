@@ -8,7 +8,8 @@ module top(
     output mosi, 
     output sck, 
     
-    output [15:0] led
+    output [6:0] seg, 
+    output [3:0] an
 );
 
 
@@ -20,7 +21,7 @@ module top(
     pmod_jstk_driver #(
         .CLK_HZ(100_000_000), 
         .SCK_HZ(500_000), 
-        .POLL_HZ(100)
+        .POLL_HZ(5)
     ) jstk (
         .clk(clk), 
         .miso(miso), 
@@ -32,11 +33,16 @@ module top(
         .joy_y(joy_y),
         .joy_btn(joy_btn),
         .data_valid(joy_valid)
-    ); 
+    );
     
-    assign led[9:0] = joy_x; 
-    assign led[12:10] = joy_btn; 
-    assign led[13] = joy_valid; 
-    assign led[15:14] = 2'b00;
+    sevenseg_hex10 #(
+        .CLK_HZ(100_000_000), 
+        .REFRESH_HZ(1000)
+    ) disp_x (
+        .clk(clk),
+        .value(joy_x),   // 10-bit from your JSTK driver
+        .an(an),
+        .seg(seg)
+    ); 
 
 endmodule
