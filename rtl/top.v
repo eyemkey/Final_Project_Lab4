@@ -11,7 +11,9 @@ module top(
     output [3:0] vgaBlue, 
     output [3:0] vgaGreen, 
     output Hsync, 
-    output Vsync
+    output Vsync, 
+    
+    output [3:0] led
 );
 
     //CLK_WIZ I/O
@@ -27,6 +29,9 @@ module top(
     wire [10:0] tlx, tly, brx, bry;
     
     assign reset = 0; 
+    
+    
+    assign led = {btn3, btn2, btn1, btn0};
     
     clk_wiz_0 clk_gen (
         .clk_in1(clk), 
@@ -60,10 +65,10 @@ module top(
     sprite_pos sprite_pos (
         .clk(clk), 
         .move_en(move_en),
-        .up(btn0_db), 
-        .down(btn3_db), 
-        .right(btn1_db), 
-        .left(btn2_db),
+        .up(btn0), 
+        .down(btn3), 
+        .right(btn1), 
+        .left(btn2),
              
         .tlx(tlx), 
         .tly(tly), 

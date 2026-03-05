@@ -16,7 +16,7 @@ module pmod_button_debouncer(
 );
 
 
-    reg [3:0] btn0_buff, btn1_buff, btn2_buff, btn3_buff; 
+    reg [2:0] btn0_buff, btn1_buff, btn2_buff, btn3_buff; 
     reg sample_en_d; 
         
     always @(posedge clk) begin
