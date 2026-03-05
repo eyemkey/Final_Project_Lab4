@@ -3,6 +3,13 @@
 module vga_out(
     input vga_clk, //74.25MHz clock
     input locked, // clk is locked and stable
+    
+    input [10:0] tlx, 
+    input [10:0] tly, 
+    input [10:0] brx, 
+    input [10:0] bry,  
+    
+    
     output reg [3:0] vgaRed, 
     output reg [3:0] vgaBlue, 
     output reg [3:0] vgaGreen, 
@@ -26,17 +33,10 @@ module vga_out(
     reg [9:0] V_idx; 
     
     
-    reg [10:0] tlx, tly, brx, bry;
-    
     initial begin
         H_idx = 0; 
         V_idx = 0; 
-        
-        //Assuming 128x128 sprite
-        tlx = 60; 
-        tly = 60; 
-        brx = 188; 
-        bry = 188; 
+       
     end
 
     always @(posedge vga_clk) begin
