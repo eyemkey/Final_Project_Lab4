@@ -11,7 +11,7 @@ module top(
     output [3:0] vgaBlue, 
     output [3:0] vgaGreen, 
     output Hsync, 
-    output Vsync, 
+    output Vsync,
     
     output [3:0] led
 );
@@ -63,7 +63,8 @@ module top(
     ); 
     
     sprite_pos sprite_pos (
-        .clk(clk), 
+        .vga_clk(vga_clk), 
+        .locked(locked),
         .move_en(move_en),
         .up(btn0), 
         .down(btn3), 

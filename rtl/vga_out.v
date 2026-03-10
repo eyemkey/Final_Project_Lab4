@@ -7,12 +7,11 @@ module vga_out(
     input [10:0] tlx, 
     input [10:0] tly, 
     input [10:0] brx, 
-    input [10:0] bry,  
+    input [10:0] bry,
     
-    
-    output reg [3:0] vgaRed, 
-    output reg [3:0] vgaBlue, 
-    output reg [3:0] vgaGreen, 
+    output [3:0] vgaRed, 
+    output [3:0] vgaBlue, 
+    output [3:0] vgaGreen, 
     output reg Hsync, 
     output reg Vsync
 );
@@ -30,13 +29,11 @@ module vga_out(
     localparam V_TOTAL   = 750;
     
     reg [10:0] H_idx; 
-    reg [9:0] V_idx; 
-    
+    reg [9:0] V_idx;
     
     initial begin
         H_idx = 0; 
-        V_idx = 0; 
-       
+        V_idx = 0;
     end
 
     always @(posedge vga_clk) begin
@@ -65,22 +62,22 @@ module vga_out(
             else
                 Vsync <= 1;
     
-            if (H_idx < H_VISIBLE && V_idx < V_VISIBLE) begin
-                vgaRed   <= 4'b0000;
-                vgaGreen <= 4'b0000;
-                vgaBlue  <= 4'b1111;  // BLUE
+//            if (H_idx < H_VISIBLE && V_idx < V_VISIBLE) begin
+//                vgaRed   <= 4'b0000;
+//                vgaGreen <= 4'b0000;
+//                vgaBlue  <= 4'b1111;  // BLUE
                 
-                if(H_idx >= tlx && V_idx >= tly && H_idx < brx && V_idx < bry) begin
-                    vgaRed <= 4'b1111; 
-                    vgaGreen <= 4'b0000; 
-                    vgaBlue <= 4'b1111;
-                end
+//                if(H_idx >= tlx && V_idx >= tly && H_idx < brx && V_idx < bry) begin
+//                    vgaRed <= 4'b1111; 
+//                    vgaGreen <= 4'b0000; 
+//                    vgaBlue <= 4'b1111;
+//                end
                 
-            end else begin
-                vgaRed   <= 4'b0000;
-                vgaGreen <= 4'b0000;
-                vgaBlue  <= 4'b0000;  // Black outside visible
-            end // if(H_idx...
+//            end else begin
+//                vgaRed <= 4'b0000;
+//                vgaGreen <= 4'b0000;
+//                vgaBlue <= 4'b0000; //black outside of visible
+//            end //if(H_idx...
             
         end //if(locked) 
         else begin
@@ -88,10 +85,24 @@ module vga_out(
             V_idx <= 0; 
             Hsync <= 1; 
             Vsync <= 1; 
-            vgaRed <= 0; 
-            vgaGreen <= 0; 
-            vgaBlue <= 0;
+//            vgaRed <= 0; 
+//            vgaGreen <= 0; 
+//            vgaBlue <= 0;
         end
     end
+
+    pixel_info pixel_info (
+        .vga_clk(vga_clk), 
+        .locked(locked), 
+        .H_idx(H_idx),
+        .V_idx(V_idx),
+        .tlx(tlx),
+        .tly(tly),
+        .brx(brx),
+        .bry(bry),
+        .vgaRed(vgaRed),
+        .vgaBlue(vgaBlue),
+        .vgaGreen(vgaGreen)    
+    ); 
 
 endmodule
