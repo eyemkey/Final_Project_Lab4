@@ -33,14 +33,20 @@ module pixel_info(
     wire [13:0] addr = local_y * SPRITE_W + local_x;
 
     initial begin
-        counter = 0;
+        $readmemh("red1.mem", red); 
+        $readmemh("green1.mem", green); 
+        $readmemh("blue1.mem", blue);
+    end
+
+//    initial begin
+//        counter = 0;
         
-        for(i = 0; i < 16384; i = i + 1) begin
-            red[i] <= 4'b1111; 
-            blue[i] <= 4'b0000;
-            green[i] <= 4'b0000;        
-        end
-    end 
+//        for(i = 0; i < 16384; i = i + 1) begin
+//            red[i] <= 4'b1111; 
+//            blue[i] <= 4'b0000;
+//            green[i] <= 4'b0000;        
+//        end
+//    end 
 
     always @(posedge vga_clk) begin
         if(locked) begin
@@ -53,6 +59,9 @@ module pixel_info(
                     vgaRed <= red[addr];
                     vgaBlue <= blue[addr]; 
                     vgaGreen <= green[addr];
+//                    vgaRed <= 4'b0000; 
+//                    vgaGreen <= 4'b1111; 
+//                    vgaBlue <= 4'b0000;
                 end
             end else begin
                 vgaRed <= 4'b0000;
