@@ -33,22 +33,22 @@ module sprite_pos(
     always @(posedge vga_clk) begin
         if(move_en && locked) begin
             if(br[0] + 10 * (right - left) > H_VISIBLE - 1) begin //right 
-                  br[0] <= H_VISIBLE - 1;
+                  br[0] <= H_VISIBLE;
                   tl[0] <= H_VISIBLE - 128;
             end else if($signed(tl[0] + 10 * (right - left)) < 0) begin //left 
                 tl[0] <= 0;
-                br[0] <= 127;
+                br[0] <= 128;
             end else begin
                 tl[0] <= tl[0] + 10 * (right - left); 
                 br[0] <= br[0] + 10 * (right - left); 
             end
             
             if(br[1] + 10 * (down - up) > V_VISIBLE - 1) begin //bottom 
-                br[1] <= V_VISIBLE - 1; 
+                br[1] <= V_VISIBLE; 
                 tl[1] <= V_VISIBLE - 128;
             end else if($signed(tl[1] + 10 * (down - up)) < 0) begin //top
                 tl[1] <= 0; 
-                br[1] <= 127;
+                br[1] <= 128;
             end else begin
                 tl[1] <= tl[1] + 10 * (down - up); 
                 br[1] <= br[1] + 10 * (down - up);

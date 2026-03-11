@@ -16,6 +16,7 @@ module pixel_info(
 
     localparam H_VISIBLE = 1280;
     localparam V_VISIBLE = 720;
+    localparam SPRITE_W = 128;
 
     reg [3:0] red [0:16383]; 
     reg [3:0] blue [0:16383];
@@ -24,6 +25,12 @@ module pixel_info(
     reg [13:0] counter; 
     
     integer i; 
+
+    
+
+    wire [10:0] local_x = H_idx - tlx;
+    wire [9:0]  local_y = V_idx - tly;
+    wire [13:0] addr = local_y * SPRITE_W + local_x;
 
     initial begin
         counter = 0;
@@ -43,17 +50,21 @@ module pixel_info(
                 vgaGreen <= 4'b0000;
                 
                 if(H_idx >= tlx && V_idx >= tly && H_idx < brx && V_idx < bry) begin
-                    vgaRed <= red[V_idx * V_VISIBLE + H_idx];
-                    vgaBlue <= blue[V_idx * V_VISIBLE + H_idx]; 
-                    vgaGreen <= green[V_idx * V_VISIBLE + H_idx];
+                    vgaRed <= red[addr];
+                    vgaBlue <= blue[addr]; 
+                    vgaGreen <= green[addr];
                 end
             end else begin
                 vgaRed <= 4'b0000;
                 vgaBlue <= 4'b0000;
                 vgaGreen <= 4'b0000;
             end
-            
         end //if(locked)
+        else begin
+            vgaRed <= 4'b0000;
+            vgaBlue <= 4'b0000;
+            vgaGreen <= 4'b0000;
+        end
     end
 
 

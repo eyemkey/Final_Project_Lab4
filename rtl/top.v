@@ -42,24 +42,9 @@ module top(
     
     
     enable_gen en_gen (
-        .clk(clk), 
+        .clk(vga_clk), 
         .sample_en(sample_en), 
         .move_en(move_en)
-    ); 
-    
-    pmod_button_debouncer btn_db (
-        .clk(clk), 
-        .sample_en(sample_en),
-         
-        .btn0(btn0), 
-        .btn1(btn1),
-        .btn2(btn2),
-        .btn3(btn3),
-        
-        .btn0_db(btn0_db),
-        .btn1_db(btn1_db),
-        .btn2_db(btn2_db),
-        .btn3_db(btn3_db)
     ); 
     
     sprite_pos sprite_pos (
