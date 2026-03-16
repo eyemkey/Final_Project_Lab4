@@ -7,7 +7,7 @@ module enable_gen(
 );  
 
     localparam SAMPLE_EN_CNT_MAX = 1_000_000;
-    localparam MOVE_EN_CNT_MAX = 1_666_667;
+    localparam MOVE_EN_CNT_MAX = 1_237_500;
     
     reg [19:0] sample_en_cnt;
     reg [20:0] move_en_cnt;

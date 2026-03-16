@@ -4,6 +4,8 @@ module vga_out(
     input vga_clk, //74.25MHz clock
     input locked, // clk is locked and stable
     
+    input btnC_db, 
+    
     input [10:0] tlx, 
     input [10:0] tly, 
     input [10:0] brx, 
@@ -94,6 +96,7 @@ module vga_out(
     pixel_info pixel_info (
         .vga_clk(vga_clk), 
         .locked(locked), 
+        .btnC_db(btnC_db),
         .H_idx(H_idx),
         .V_idx(V_idx),
         .tlx(tlx),

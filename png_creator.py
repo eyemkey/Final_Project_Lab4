@@ -3,9 +3,9 @@ from PIL import Image
 WIDTH = 128
 HEIGHT = 128
 
-RED_FILE = "red3.mem"
-GREEN_FILE = "green3.mem"
-BLUE_FILE = "blue3.mem"
+RED_FILE = "red1.mem"
+GREEN_FILE = "green1.mem"
+BLUE_FILE = "blue1.mem"
 OUTPUT_IMAGE = "reconstructed.png"
 
 # Read hex values from files
